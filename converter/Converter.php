@@ -37,7 +37,7 @@ class Converter implements IConverter
         return $rows;
     }
 
-    private function convertToRow(string $transaction, string $description): ?array
+    private function convertToRow(string $transaction, string $description): Transaction
     {
         preg_match('/(\d{6})(\d{4})?([A-Z])([A-Z]{1,2})?(\d+,\d+)?/', $transaction, $matches);
         if (sizeof($matches) !== 6) {
@@ -55,16 +55,12 @@ class Converter implements IConverter
 
         $iban = null;
         $cleanedDescription = preg_replace('/\?[0-9]{2}/', '', $description);
-        preg_match('/IBAN: ([A-Z]{2}[0-9]{18})/', $cleanedDescription, $ibanMatches);
+        $cleanedDescription = preg_replace('/TAN: (\d{6})/', 'TAN: xxxxxx', $cleanedDescription);
+        preg_match('/IBAN: ([A-Z]{2}\d{2}[A-Z0-9]{14})/', $cleanedDescription, $ibanMatches);
         if (sizeof($ibanMatches) === 2) {
             $iban = $ibanMatches[1];
         }
 
-        return [
-            'date' => $date->format('Y-m-d'),
-            'amount' => $transactionAmount,
-            'iban' => $iban,
-            'description' => $cleanedDescription
-        ];
+        return new Transaction($date->format('Y-m-d'), $transactionAmount, $iban, $cleanedDescription);
     }
 }
