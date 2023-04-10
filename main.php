@@ -1,19 +1,10 @@
 <?php
-require('./Transaction.php');
-require('./Converter.php');
+require_once('./converter/IConverter.php');
+require_once('./converter/ConverterFactory.php');
 
 $inputFile = 'Umsaetze_436726009_08.04.2023.mta'; // input MT940 file
 $outputFile = 'output.csv'; // output CSV file
 
-$converter = new Converter();
+$factory = new ConverterFactory();
+$converter = $factory->getConverter();
 print_r($converter->convert($inputFile, $outputFile));
-
-// Open the input file and read its contents
-
-// Open the output file and write the CSV data
-/*$outputHandle = fopen($outputFile, 'w');
-foreach ($rows as $row) {
-    fputcsv($outputHandle, $row);
-}
-fclose($outputHandle);
-*/
