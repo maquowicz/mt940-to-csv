@@ -14,6 +14,7 @@ class Transaction
         $this->transactionAmount = $transactionAmount;
         $this->iban = $iban;
         $this->description = $description;
+        $this->type = $type;
     }
 
     public function __set($name, $value)
