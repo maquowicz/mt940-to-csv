@@ -5,55 +5,27 @@ class Transaction
     private $transactionAmount;
     private $iban;
     private $description;
+    private $type;
 
     // Constructor
-    public function __construct($transactionDate, $transactionAmount, $iban, $description)
+    public function __construct(DateTime $transactionDate, float $transactionAmount, ?string $iban, string $description, string $type)
     {
-        $this->transactionDate = $transactionDate;
+        $this->transactionDate = $transactionDate->format('Y-m-d');
         $this->transactionAmount = $transactionAmount;
         $this->iban = $iban;
         $this->description = $description;
     }
 
-    // Getters and Setters
-    public function getTransactionDate()
+    public function __set($name, $value)
     {
-        return $this->transactionDate;
+        $this->$name = $value;
     }
 
-    public function setTransactionDate($transactionDate)
+    public function __get($name)
     {
-        $this->transactionDate = $transactionDate;
-    }
-
-    public function getTransactionAmount()
-    {
-        return $this->transactionAmount;
-    }
-
-    public function setTransactionAmount($transactionAmount)
-    {
-        $this->transactionAmount = $transactionAmount;
-    }
-
-    public function getIBAN()
-    {
-        return $this->iban;
-    }
-
-    public function setIBAN($iban)
-    {
-        $this->iban = $iban;
-    }
-
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    public function setDescription($description)
-    {
-        $this->description = $description;
+        if (property_exists($this, $name)) {
+            return $this->$name;
+        }
     }
 
     // Convert the object to JSON format

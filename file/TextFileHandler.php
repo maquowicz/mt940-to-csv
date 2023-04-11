@@ -1,7 +1,6 @@
 <?php
 class TextFileHandler
 {
-
     public function __construct()
     {
     }
@@ -30,12 +29,19 @@ class TextFileHandler
             return false;
         }
 
-        print_r($data[0]);
         // Open the CSV file for writing
         $handle = fopen($filename, 'w');
 
-        // Write the headers to the CSV file
-        $headers = array_keys(get_object_vars($data[0]));
+        //TODO: It might be better to pass the headers over using reflection here. The idea behind this is to make it as easy as possible for the user. On the other, there is no other chance then to use the variable names in the csv file as well.
+        $reflectionClass = new ReflectionClass($data[0]);
+        $reflectionProperties = $reflectionClass->getProperties(ReflectionProperty::IS_PRIVATE);
+
+        $headers = array();
+
+        foreach($reflectionProperties as $reflectionProperty){
+            array_push($headers, $reflectionProperty->getName());
+        }
+        
         fputcsv($handle, $headers);
 
         // Write each object's properties to the CSV file

@@ -7,7 +7,7 @@ class Converter implements IConverter
     {
     }
 
-    public function convert(string $input, string $output): array
+    public function convert(string $input): array
     {
         if (!file_exists($input)) {
             throw new FileNotFoundException();
@@ -49,18 +49,21 @@ class Converter implements IConverter
         $date = DateTime::createFromFormat('ymd', $transactionDate);
 
         $transactionAmount = str_replace(',', '.', $matches[5]);
-        if ($matches[3] === 'D') {
+        $type = $matches[3];
+        if ($type === 'D') {
             $transactionAmount = -$transactionAmount;
         }
 
         $iban = null;
         $cleanedDescription = preg_replace('/\?[0-9]{2}/', '', $description);
         $cleanedDescription = preg_replace('/TAN: (\d{6})/', 'TAN: xxxxxx', $cleanedDescription);
+        $cleanedDescription = preg_replace('/\R+/', ' ', $cleanedDescription);
+
         preg_match('/IBAN: ([A-Z]{2}\d{2}[A-Z0-9]{14})/', $cleanedDescription, $ibanMatches);
         if (sizeof($ibanMatches) === 2) {
             $iban = $ibanMatches[1];
         }
 
-        return new Transaction($date->format('Y-m-d'), $transactionAmount, $iban, $cleanedDescription);
+        return new Transaction($date, $transactionAmount, $iban, rtrim($cleanedDescription), $type);
     }
 }

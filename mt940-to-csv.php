@@ -29,7 +29,7 @@ $outputFile = $options['o'];
 
 $factory = new ConverterFactory();
 $converter = $factory->getConverter();
-$converted = $converter->convert($inputFile, $outputFile);
+$converted = $converter->convert($inputFile);
 
 $textFileHandler = new TextFileHandler();
 $textFileHandler->writeObjectsToCsv($converted, $outputFile);

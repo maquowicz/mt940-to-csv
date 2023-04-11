@@ -20,17 +20,17 @@ class ConverterTest extends TestCase
     {
         $this->expectException(FileNotFoundException::class);
 
-        $this->converter->convert('nonexistent_file.txt', 'output.csv');
+        $this->converter->convert('nonexistent_file.txt');
     }
 
     public function testConvert()
     {
-        $result = $this->converter->convert(__DIR__ . '/test_file.mta', 'output.txt');
+        $result = $this->converter->convert(__DIR__ . '/test_file.mta');
         $this->assertEquals(10, sizeof($result));
-        $this->assertEquals(floatval("100000.00"), floatval($result[0]->getTransactionAmount()));
-        $this->assertEquals(floatval("-200000,00"), floatval($result[1]->getTransactionAmount()));
-        $this->assertEquals("NL88RABO7959494258", $result[7]->getIBAN());
-        $this->assertEquals("REDEMPTION OF BONDS TAN: xxxxxx IBAN: NL74RABO7959494258\n", $result[6]->getDescription());
+        $this->assertEquals(floatval("100000.00"), floatval($result[0]->transactionAmount));
+        $this->assertEquals(floatval("-200000,00"), floatval($result[1]->transactionAmount));
+        $this->assertEquals("NL88RABO7959494258", $result[7]->iban);
+        $this->assertEquals("REDEMPTION OF BONDS TAN: xxxxxx IBAN: NL74RABO7959494258", $result[6]->description);
     }
 }
 ?>
