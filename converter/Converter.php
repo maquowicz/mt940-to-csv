@@ -84,7 +84,7 @@ class Converter implements IConverter
         }
 
         $iban = null;
-        $cleanedDescription = $this->cleanDescription($description)
+        $cleanedDescription = $this->cleanDescription($description);
         preg_match('/IBAN: ([A-Z]{2}\d{2}[A-Z0-9]{14})/', $cleanedDescription, $ibanMatches);
         if (sizeof($ibanMatches) === 2) {
             $iban = $ibanMatches[1];
