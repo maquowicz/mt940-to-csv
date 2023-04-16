@@ -7,14 +7,17 @@ class Transaction
     private $description;
     private $type;
 
+    private $sepaReference;
+
     // Constructor
-    public function __construct(DateTime $transactionDate, float $transactionAmount, ?string $iban, string $description, string $type)
+    public function __construct(DateTime $transactionDate, float $transactionAmount, ?string $iban, string $description, string $type, ?string $sepaReference)
     {
         $this->transactionDate = $transactionDate->format('Y-m-d');
         $this->transactionAmount = $transactionAmount;
         $this->iban = $iban;
         $this->description = $description;
         $this->type = $type;
+        $this->sepaReference = $sepaReference;
     }
 
     public function __set($name, $value)
@@ -37,6 +40,7 @@ class Transaction
             'transactionAmount' => $this->transactionAmount,
             'iban' => $this->iban,
             'description' => $this->description,
+            'sepaReference' => $this->sepaReference,
         ];
 
         return json_encode($data);
