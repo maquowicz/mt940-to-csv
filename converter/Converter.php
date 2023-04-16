@@ -136,6 +136,6 @@ class Converter implements IConverter
         if (sizeof($ibanMatches) === 2) {
             return $ibanMatches[1];
         }
-        return null;
+        return null; 
     }
 }
