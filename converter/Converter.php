@@ -85,11 +85,13 @@ class Converter implements IConverter
 
         $cleanedDescription = $this->cleanDescription($description);
 
-        $iban = $this->getIBAN($cleanedDescription);
+        $memo = $this->getMemo($cleanedDescription);
 
-        $sepa = $this->getSEPAMandateReference($cleanedDescription);
+        $iban = $this->getIBAN($memo);
 
-        return new Transaction($date, $transactionAmount, $iban, rtrim($cleanedDescription), $type, $sepa);
+        $sepa = $this->getSEPAMandateReference($memo);
+
+        return new Transaction($date, $transactionAmount, $iban, rtrim($memo), $type, $sepa);
     }
 
     /**
@@ -99,9 +101,9 @@ class Converter implements IConverter
      * @return string The cleaned description
     */
     private function cleanDescription($description) : string{
-        $cleanedDescription = preg_replace('/\?[0-9]{2}/', '', $description);
-        $cleanedDescription = preg_replace('/TAN: (\d{6})/', 'TAN: xxxxxx', $cleanedDescription);
-        $cleanedDescription = preg_replace('/\R+/', ' ', $cleanedDescription);
+        //$cleanedDescription = preg_replace('/\?[0-9]{2}/', '', $description);
+        $cleanedDescription = preg_replace('/TAN: (\d{6})/', 'TAN: xxxxxx', $description);
+        $cleanedDescription = preg_replace('/\R+/', '', $cleanedDescription);
         return $cleanedDescription;
     }
 
@@ -135,6 +137,43 @@ class Converter implements IConverter
         preg_match('/IBAN: ([A-Z]{2}\d{2}[A-Z0-9]{14})/', $description, $ibanMatches);
         if (sizeof($ibanMatches) === 2) {
             return $ibanMatches[1];
+        }
+        return null; 
+    }
+
+    private function getPostingText(string $description) : ?string{
+        preg_match('/\?00([\w\d]{1,27})\?/', $description, $matches);
+        if (sizeof($matches) === 2) {
+            return $matches[1];
+        }
+        return null; 
+    }
+
+    private function getMemo(string $description) : ?string {
+        //First filter everything between the ?20 and the ?30
+        preg_match('/\?20(.*)\?30/', $description, $initialMatches);
+
+        //No match => Does not have ?20 in it => Return the string
+        if (sizeof($initialMatches) === 0) {
+            return $description;
+        }
+
+        //Then check if there is a letter before the ? and a letter behind the ? => no space
+        //Then check if there is a number before the ? and a letter behind the ? => no space
+        //Then check if there is a letter before the ? and a number behind the ? => space
+        //Then check if there is a number before the ? and a letter behind the ? => space
+        if (sizeof($initialMatches) === 2) {
+            $workingString = $initialMatches[1];
+            $workingString = preg_replace('/([a-zA-Z]{1})\?2\d([a-zA-Z]{1})/', '$1$2', $workingString);
+            $workingString = preg_replace('/([0-9]{1})\?2\d([0-9]{1})/', '$1$2', $workingString);
+            $workingString = preg_replace('/([a-zA-Z]{1})\?2\d([0-9]{1})/', '$1 $2', $workingString);
+            $workingString = preg_replace('/([0-9]{1})?\?2\d([a-zA-Z]{1})/', '$1 $2', $workingString);
+            $workingString = preg_replace('/([a-z]{1})\?2\d([A-Z]{1})/', '$1 $2', $workingString);
+            $workingString = preg_replace('/(\s{1})\?2\d([0-9]{1})/', '$1$2', $workingString);
+            $workingString = preg_replace('/(\s{1})?\?2\d([a-zA-Z]{1})/', '$1$2', $workingString);
+            $workingString = preg_replace('/([a-zA-Z]{1})\?2\d(\s{1})/', '$1$2', $workingString);
+            $workingString = preg_replace('/([0-9]{1})?\?2\d(\s{1})/', '$1$2', $workingString);
+            return $workingString;   
         }
         return null; 
     }

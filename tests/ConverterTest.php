@@ -27,6 +27,7 @@ class ConverterTest extends TestCase
     {
         $result = $this->converter->convert(__DIR__ . '/test_file.mta');
         $this->assertEquals(10, sizeof($result));
+        $this->assertEquals("EREF+xx:xxxxxxxxKREF+2021122986876852591700000000032013 MREF+xxxxxxxxCRED+xxxxxxxxxxxxxxxSVWZ+xxxxxxxx XXXXXXXXungsnummer XXXX-XXX-XXXX XXEF: xx:xxxxxxxx MREF: xxxxxx 13 CRED: xxxxxxxxxxxxxxxx IBAN: XXXXXXXXXXXXXXXXXX", $result[0]->description);
         $this->assertEquals(floatval("100000.00"), floatval($result[0]->transactionAmount));
         $this->assertEquals(floatval("-200000,00"), floatval($result[1]->transactionAmount));
         $this->assertEquals("NL88RABO7959494258", $result[7]->iban);
