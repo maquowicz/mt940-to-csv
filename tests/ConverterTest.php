@@ -31,7 +31,8 @@ class ConverterTest extends TestCase
         $this->assertEquals(floatval("100000.00"), floatval($result[0]->transactionAmount));
         $this->assertEquals(floatval("-200000,00"), floatval($result[1]->transactionAmount));
         $this->assertEquals("NL00000600000XXXX00000", $result[0]->payerIban);
-        $this->assertEquals("Insurance", $result[0]->payerName);
+        $this->assertEquals("Insurance-AG", $result[0]->payerName);
+        $this->assertEquals("Insurance", $result[1]->recipientName);
         $this->assertNull($result[7]->payerIban);
         $this->assertEquals("DE98ZZZ09999999999", $result[7]->sepaReference);
         $this->assertEquals("REDEMPTION OF BONDS TAN: xxxxxx IBAN: NL74RABO7959494258 GB29NWBK60161331926819", $result[6]->description);

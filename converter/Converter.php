@@ -160,11 +160,25 @@ class Converter implements IConverter
      * @return string The name of the principal or null
      */
     private function getName(string $description) : ?string{
-        preg_match('/\?32(.*?)\?/', $description, $matches);
-        if (sizeof($matches) === 2) {
-            return $matches[1];
-        }
-        return null; 
+        $pattern = '/\?32(.*?)(\?33(.*?)\?|$)/'; // updated pattern to include optional part between ?33 and ?
+
+        preg_match($pattern, $description, $matches);
+
+        if (isset($matches[1])) {
+            $result = $matches[1]; // contains the extracted substring before ?33
+            
+            $result = str_replace('?', '', $result); // remove any remaining question marks
+            
+            if (isset($matches[3])) {
+                $optionalPart = $matches[3]; // contains the extracted substring between ?33 and ?
+                $optionalPart = str_replace('?', '', $optionalPart); // remove any remaining question marks
+                $result .= $optionalPart; // concatenate both parts
+            }
+            
+            return $result;
+        } 
+
+        return null;
     }
 
     private function getPostingText(string $description) : ?string{
