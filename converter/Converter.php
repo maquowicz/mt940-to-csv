@@ -74,24 +74,36 @@ class Converter implements IConverter
             return null;
         }
 
+        $trx = new Transaction();
+
         $transactionDate = $matches[1];
         $date = DateTime::createFromFormat('ymd', $transactionDate);
+
+        $cleanedDescription = $this->cleanDescription($description);
+
+        $iban = $this->getIBAN($cleanedDescription);
+        $name = $this->getName($cleanedDescription);
+
+        $memo = $this->getMemo($cleanedDescription);
+        $sepa = $this->getSEPAMandateReference($memo); 
+
+        $trx->transactionDate = $date;
+        $trx->description = rtrim($memo);
+        $trx->sepaReference = $sepa;
 
         $transactionAmount = str_replace(',', '.', $matches[5]);
         $type = $matches[3];
         if ($type === 'D') {
-            $transactionAmount = -$transactionAmount;
+            $trx->transactionAmount = floatval(-$transactionAmount);
+            $trx->recepientIban = $iban;
+            $trx->recipientName = $name;
+        }else{
+            $trx->transactionAmount = floatval($transactionAmount);
+            $trx->payerIban = $iban;
+            $trx->payerName = $name;
         }
 
-        $cleanedDescription = $this->cleanDescription($description);
-
-        $memo = $this->getMemo($cleanedDescription);
-
-        $iban = $this->getIBAN($memo);
-
-        $sepa = $this->getSEPAMandateReference($memo);
-
-        return new Transaction($date, $transactionAmount, $iban, rtrim($memo), $type, $sepa);
+        return $trx;
     }
 
     /**
@@ -134,9 +146,23 @@ class Converter implements IConverter
      * @return string The extracted IBAN or null
      */
     private function getIBAN(string $description) : ?string{
-        preg_match('/IBAN: ([A-Z]{2}\d{2}[A-Z0-9]{14})/', $description, $ibanMatches);
+        preg_match('/\?31([A-Z]{2}\d{2}[A-Z0-9]{18})/', $description, $ibanMatches);
         if (sizeof($ibanMatches) === 2) {
             return $ibanMatches[1];
+        }
+        return null; 
+    }
+    
+    /**
+     * Get the name of the principal
+     *
+     * @param  string $description The description or text to extract the name from
+     * @return string The name of the principal or null
+     */
+    private function getName(string $description) : ?string{
+        preg_match('/\?32(.*?)\?/', $description, $matches);
+        if (sizeof($matches) === 2) {
+            return $matches[1];
         }
         return null; 
     }
