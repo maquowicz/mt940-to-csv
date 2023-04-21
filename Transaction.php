@@ -1,23 +1,19 @@
 <?php
 class Transaction
 {
-    private $transactionDate;
-    private $transactionAmount;
-    private $iban;
-    private $description;
-    private $type;
-
-    private $sepaReference;
+    private DateTime $transactionDate;
+    private float $transactionAmount;
+    private ?string $payerIban = null;
+    private ?string $payerName = null;
+    private ?string $recepientIban = null;
+    private ?string $recipientName = null;
+    private ?string $description = null;
+    private ?string $type = null;
+    private ?string $sepaReference = null;
 
     // Constructor
-    public function __construct(DateTime $transactionDate, float $transactionAmount, ?string $iban, string $description, string $type, ?string $sepaReference)
+    public function __construct()
     {
-        $this->transactionDate = $transactionDate->format('Y-m-d');
-        $this->transactionAmount = $transactionAmount;
-        $this->iban = $iban;
-        $this->description = $description;
-        $this->type = $type;
-        $this->sepaReference = $sepaReference;
     }
 
     public function __set($name, $value)
@@ -36,10 +32,14 @@ class Transaction
     public function toJson()
     {
         $data = [
-            'transactionDate' => $this->transactionDate,
+            'transactionDate' => $this->transactionDate->format('Y-m-d'),
             'transactionAmount' => $this->transactionAmount,
-            'iban' => $this->iban,
+            'payerIban' => $this->payerIban,
+            'payerName' => $this->payerName,
+            'recipientIban' => $this->recipientIban,
+            'recipientName' => $this->recipientName,
             'description' => $this->description,
+            'type' => $this->type,
             'sepaReference' => $this->sepaReference,
         ];
 

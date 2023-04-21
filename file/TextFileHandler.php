@@ -48,7 +48,11 @@ class TextFileHandler
         foreach ($data as $obj) {
             $row = [];
             foreach ($headers as $header) {
-                $row[] = $obj->{$header};
+                if(is_a($obj->{$header}, 'DateTime')){
+                    $row[] = $obj->{$header}->format('Y-m-d');
+                }else{
+                    $row[] = $obj->{$header};
+                }   
             }
             fputcsv($handle, $row);
         }
