@@ -194,14 +194,22 @@ class Converter implements IConverter
         preg_match('/\?20(.*)\?30/', $description, $initialMatches);
 
         //No match => Does not have ?20 in it => Return the string
-        if (sizeof($initialMatches) === 0) {
+        if (!$initialMatches) {
             return $description;
         }
 
-        //Then check if there is a letter before the ? and a letter behind the ? => no space
-        //Then check if there is a number before the ? and a letter behind the ? => no space
-        //Then check if there is a letter before the ? and a number behind the ? => space
-        //Then check if there is a number before the ? and a letter behind the ? => space
+        /**
+         * The following regex are based on these assumptions:
+         * 1. If there is a character before the ? and a character after the ? it is one word and no space is added
+         * 2. If there is a number before the ? and a number after the ? it is one word and no space is added
+         * 3. If there is a character before the ? and a number after the ? it is two words and a space is added
+         * 4. If there is a number before the ? and a character after the ? it is two words and a space is added
+         * 5. If there is a lower case character before the ? and a upper case character after the ? it is two words and a space is added
+         * 6. If there is space before the ? and a number after the ? it is directly combined as there is alredy a space
+         * 7. If there is space before the ? and a character after the ? it is directly combined as there is alredy a space
+         * 8. If there is character before the ? and a space after the ? it is directly combined as there is alredy a space
+         * 9. If there is number before the ? and a space after the ? it is directly combined as there is alredy a space
+         */
         if (sizeof($initialMatches) === 2) {
             $workingString = $initialMatches[1];
             $workingString = preg_replace('/([a-zA-Z]{1})\?2\d([a-zA-Z]{1})/', '$1$2', $workingString);
