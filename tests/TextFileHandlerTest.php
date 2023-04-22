@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 require_once(__DIR__ . '/../converter/IConverter.php');
 require_once(__DIR__ . '/../converter/Converter.php');
 require_once(__DIR__ . '/../converter/ConverterFactory.php');
+require_once(__DIR__ . '/../converter/ConverterHelper.php');
 require_once(__DIR__ . '/../exception/FileNotFoundException.php');
 require_once(__DIR__ . '/../Transaction.php');
 require_once(__DIR__ . '/../file/TextFileHandler.php');
