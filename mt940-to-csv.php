@@ -2,6 +2,7 @@
 require_once('./converter/IConverter.php');
 require_once('./converter/Converter.php');
 require_once('./converter/ConverterFactory.php');
+require_once('./converter/IConverterHelper.php');
 require_once('./converter/ConverterHelper.php');
 require_once('./exception/FileNotFoundException.php');
 require_once('./file/TextFileHandler.php');

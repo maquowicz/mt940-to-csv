@@ -6,7 +6,7 @@ class Converter implements IConverter
 {
     private array $rows = [];
 
-    private ConverterHelper $converterHelper;
+    private IConverterHelper $converterHelper;
 
     public function __construct()
     {

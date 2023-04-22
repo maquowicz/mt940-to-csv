@@ -1,5 +1,8 @@
 <?php
-class ConverterHelper{
+/**
+ * Helper class to do the heavy lifting of the converter tasks
+ */
+class ConverterHelper implements IConverterHelper{
 
     public function __construct(){
 
