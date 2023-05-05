@@ -2,9 +2,11 @@
 /**
  * Helper class to do the heavy lifting of the converter tasks
  */
-class ConverterHelper implements IConverterHelper{
+class ConverterHelper implements IConverterHelper
+{
 
-    public function __construct(){
+    public function __construct()
+    {
         //Empty constructor
     }
 
@@ -14,7 +16,8 @@ class ConverterHelper implements IConverterHelper{
      * @param string $description The description to be cleaned
      * @return string The cleaned description
     */
-    public function cleanDescription($description) : string{
+    public function cleanDescription($description) : string
+    {
         $cleanedDescription = preg_replace('/TAN: (\d{6})/', 'TAN: xxxxxx', $description);
         $cleanedDescription = preg_replace('/\R+/', '', $cleanedDescription);
         return $cleanedDescription;
@@ -27,13 +30,14 @@ class ConverterHelper implements IConverterHelper{
      * @param  string $description The description or text to extract the SEPA mandate reference
      * @return string The extracted SEPA reference or NULL
      */
-    public function getSEPAMandateReference(?string $description) : ?string {
-        if($description === null || trim($description) === "") {
+    public function getSEPAMandateReference(?string $description) : ?string 
+    {
+        if ($description === null || trim($description) === "") {
             return null;
         }
         $matches = array();
         preg_match("/\b([A-Z]{2}\d{2}[A-Z0-9]{3}\d{1,30})\b/", $description, $matches);
-        if(sizeof($matches) <= 0){
+        if (empty($matches)) {
             return null;
         }
         return $matches[1];
@@ -46,7 +50,8 @@ class ConverterHelper implements IConverterHelper{
      * @param  string $description The description or text to extract the IBAN from
      * @return string The extracted IBAN or null
      */
-    public function getIBAN(string $description) : ?string{
+    public function getIBAN(string $description) : ?string
+    {
         preg_match('/\?31([A-Z]{2}\d{2}[A-Z0-9]{18})/', $description, $ibanMatches);
         if (sizeof($ibanMatches) === 2) {
             return $ibanMatches[1];
@@ -60,7 +65,8 @@ class ConverterHelper implements IConverterHelper{
      * @param  string $description The description or text to extract the name from
      * @return string The name of the principal or null
      */
-    public function getName(string $description) : ?string{
+    public function getName(string $description) : ?string
+    {
         $pattern = '/\?32(.*?)(\?33(.*?)\?|$)/'; // updated pattern to include optional part between ?33 and ?
 
         preg_match($pattern, $description, $matches);
@@ -82,15 +88,17 @@ class ConverterHelper implements IConverterHelper{
         return null;
     }
 
-    public function getPostingText(string $description) : ?string{
+    public function getPostingText(string $description) : ?string
+    {
         preg_match('/\?00([\w\d]{1,27})\?/', $description, $matches);
         if (sizeof($matches) === 2) {
             return $matches[1];
         }
-        return null; 
+        return null;
     }
 
-    public function getMemo(string $description) : ?string {
+    public function getMemo(string $description) : ?string 
+    {
         //First filter everything between the ?20 and the ?30
         preg_match('/\?20(.*)\?30/', $description, $initialMatches);
 
