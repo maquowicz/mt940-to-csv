@@ -1,6 +1,10 @@
 <?php
 require_once(__DIR__ . '/../converter/IConverterHelper.php');
 require_once(__DIR__ . '/../converter/ConverterHelper.php');
+
+/**
+ * @covers ConverterHelper
+ */
 class ConverterHelperTest extends \PHPUnit\Framework\TestCase
 {
     private $converterHelper;

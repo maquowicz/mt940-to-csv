@@ -3,6 +3,6 @@ You have an MT940 file and want to analyze your spendings. This script helps you
 ## Install the dependencies
 ```composer install```
 ## Run unit tests
-```./vendor/bin/phpunit tests```
+```XDEBUG_MODE=coverage ./vendor/bin/phpunit --log-junit reports/junit.xml --coverage-clover reports/clover.xml tests```
 ## Run the script
 ```php mt940-to-csv.php -i=<path to input> -o=<path to output>```

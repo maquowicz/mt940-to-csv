@@ -9,6 +9,10 @@ require_once(__DIR__ . '/../converter/IConverterHelper.php');
 require_once(__DIR__ . '/../exception/FileNotFoundException.php');
 require_once(__DIR__ . '/../Transaction.php');
 
+/**
+ * @covers Converter
+ * @covers ConverterHelper
+ */
 class ConverterTest extends TestCase
 {
     private $converter;

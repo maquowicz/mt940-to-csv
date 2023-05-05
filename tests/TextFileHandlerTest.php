@@ -10,6 +10,11 @@ require_once(__DIR__ . '/../exception/FileNotFoundException.php');
 require_once(__DIR__ . '/../Transaction.php');
 require_once(__DIR__ . '/../file/TextFileHandler.php');
 
+/**
+ * @covers TextFileHandler
+ * @covers Converter
+ * @covers ConverterHelper
+ */
 class TextFileHandlerTest extends TestCase
 {
     private $converter;
