@@ -1,0 +1,6 @@
+projectKey=mt940-to-csv
+serverUrl=https://sonarqube.sommerfeldsven.de
+serverVersion=10.0.0.68432
+dashboardUrl=https://sonarqube.sommerfeldsven.de/dashboard?id=mt940-to-csv
+ceTaskId=AYfrkcEakxJ-yN9yYARS
+ceTaskUrl=https://sonarqube.sommerfeldsven.de/api/ce/task?id=AYfrkcEakxJ-yN9yYARS

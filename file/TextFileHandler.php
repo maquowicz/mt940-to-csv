@@ -3,6 +3,7 @@ class TextFileHandler
 {
     public function __construct()
     {
+        //Empty constructor
     }
 
     public function read($file)

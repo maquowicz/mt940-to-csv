@@ -11,4 +11,3 @@ interface IConverter {
      */
     public function convert(string $input): array;
 }
-?>

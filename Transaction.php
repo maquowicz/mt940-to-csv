@@ -5,7 +5,7 @@ class Transaction
     private float $transactionAmount;
     private ?string $payerIban = null;
     private ?string $payerName = null;
-    private ?string $recepientIban = null;
+    private ?string $recipientIban = null;
     private ?string $recipientName = null;
     private ?string $description = null;
     private ?string $type = null;
@@ -46,4 +46,3 @@ class Transaction
         return json_encode($data);
     }
 }
-?>

@@ -40,4 +40,3 @@ class ConverterTest extends TestCase
         $this->assertEquals("REDEMPTION OF BONDS TAN: xxxxxx IBAN: NL74RABO7959494258 GB29NWBK60161331926819", $result[6]->description);
     }
 }
-?>

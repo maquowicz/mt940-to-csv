@@ -52,5 +52,3 @@ interface IConverterHelper {
      */
     public function getMemo(string $description): ?string;
 }
-
-?>

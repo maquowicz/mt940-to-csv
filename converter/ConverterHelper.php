@@ -5,7 +5,7 @@
 class ConverterHelper implements IConverterHelper{
 
     public function __construct(){
-
+        //Empty constructor
     }
 
     /**
@@ -127,4 +127,3 @@ class ConverterHelper implements IConverterHelper{
         return null; 
     }
 }
-?>
