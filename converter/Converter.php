@@ -40,7 +40,7 @@ class Converter implements IConverter
      */
     private function extractTransactions(string $fileContents): array
     {
-        preg_match_all('/(?<=:61:).*?(?=:[0-9]{2}[A-Z]{0,1}:)|(?<=:86:).*?(?=:[0-9]{2}[A-Z]{0,1}:)/s', $fileContents, $matches);
+        preg_match_all('/(?<=:61:).*?(?=:[\d]{2}[A-Z]{0,1}:)|(?<=:86:).*?(?=:[\d]{2}[A-Z]{0,1}:)/s', $fileContents, $matches);
         return $matches[0];
     }
 
@@ -88,7 +88,7 @@ class Converter implements IConverter
         $name = $this->converterHelper->getName($cleanedDescription);
 
         $memo = $this->converterHelper->getMemo($cleanedDescription);
-        $sepa = $this->converterHelper->getSEPAMandateReference($memo); 
+        $sepa = $this->converterHelper->getSEPAMandateReference($memo);
 
         $trx->transactionDate = $date;
         $trx->description = rtrim($memo);
@@ -96,11 +96,12 @@ class Converter implements IConverter
 
         $transactionAmount = str_replace(',', '.', $matches[5]);
         $type = $matches[3];
-        if ($type === 'D') {
+        if ($type === 'D') 
+        {
             $trx->transactionAmount = floatval(-$transactionAmount);
             $trx->recepientIban = $iban;
             $trx->recipientName = $name;
-        }else{
+        } else {
             $trx->transactionAmount = floatval($transactionAmount);
             $trx->payerIban = $iban;
             $trx->payerName = $name;

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/home/svensommerfeld/repositories/mt940-to-csv/tests" tests="10" assertions="35" errors="0" failures="0" skipped="0" time="0.070890">
+    <testsuite name="ConverterHelperTest" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/ConverterHelperTest.php" tests="6" assertions="22" errors="0" failures="0" skipped="0" time="0.052786">
+      <testcase name="testGetSEPAMandateReference" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/ConverterHelperTest.php" line="23" class="ConverterHelperTest" classname="ConverterHelperTest" assertions="3" time="0.038996"/>
+      <testcase name="testGetIBAN" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/ConverterHelperTest.php" line="38" class="ConverterHelperTest" classname="ConverterHelperTest" assertions="3" time="0.002092"/>
+      <testcase name="testGetName" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/ConverterHelperTest.php" line="53" class="ConverterHelperTest" classname="ConverterHelperTest" assertions="5" time="0.002453"/>
+      <testcase name="testGetMemo" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/ConverterHelperTest.php" line="86" class="ConverterHelperTest" classname="ConverterHelperTest" assertions="8" time="0.003277"/>
+      <testcase name="testCleanDescription" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/ConverterHelperTest.php" line="16" class="ConverterHelperTest" classname="ConverterHelperTest" assertions="1" time="0.002268"/>
+      <testcase name="testGetPostingText" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/ConverterHelperTest.php" line="78" class="ConverterHelperTest" classname="ConverterHelperTest" assertions="2" time="0.003700"/>
+    </testsuite>
+    <testsuite name="ConverterTest" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/ConverterTest.php" tests="2" assertions="11" errors="0" failures="0" skipped="0" time="0.007409">
+      <testcase name="testConvertThrowsFileNotFoundException" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/ConverterTest.php" line="25" class="ConverterTest" classname="ConverterTest" assertions="1" time="0.002879"/>
+      <testcase name="testConvert" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/ConverterTest.php" line="32" class="ConverterTest" classname="ConverterTest" assertions="10" time="0.004530"/>
+    </testsuite>
+    <testsuite name="TextFileHandlerTest" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/TextFileHandlerTest.php" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="0.010695">
+      <testcase name="testWriteNoData" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/TextFileHandlerTest.php" line="37" class="TextFileHandlerTest" classname="TextFileHandlerTest" assertions="1" time="0.003180"/>
+      <testcase name="testWriteSuccesfully" file="/home/svensommerfeld/repositories/mt940-to-csv/tests/TextFileHandlerTest.php" line="30" class="TextFileHandlerTest" classname="TextFileHandlerTest" assertions="1" time="0.007515"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

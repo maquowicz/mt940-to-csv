@@ -9,6 +9,10 @@ require_once(__DIR__ . '/../converter/IConverterHelper.php');
 require_once(__DIR__ . '/../exception/FileNotFoundException.php');
 require_once(__DIR__ . '/../Transaction.php');
 
+/**
+ * @covers Converter
+ * @covers ConverterHelper
+ */
 class ConverterTest extends TestCase
 {
     private $converter;
@@ -40,4 +44,3 @@ class ConverterTest extends TestCase
         $this->assertEquals("REDEMPTION OF BONDS TAN: xxxxxx IBAN: NL74RABO7959494258 GB29NWBK60161331926819", $result[6]->description);
     }
 }
-?>
