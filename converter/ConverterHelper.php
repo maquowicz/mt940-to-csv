@@ -67,8 +67,9 @@ class ConverterHelper implements IConverterHelper
      */
     public function getName(string $description) : ?string
     {
-        $pattern = '/\?32(.*?)(\?33(.*?)\?|$)/'; // updated pattern to include optional part between ?33 and ?
+        $pattern = '/\?32((?:(?!\?33).)*?)(\?34|$)/'; // updated pattern to include optional part between ?33 and ?
 
+        
         preg_match($pattern, $description, $matches);
 
         if (isset($matches[1])) {

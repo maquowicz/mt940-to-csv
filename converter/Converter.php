@@ -40,8 +40,28 @@ class Converter implements IConverter
      */
     private function extractTransactions(string $fileContents): array
     {
-        preg_match_all('/(?<=:61:).*?(?=:[\d]{2}[A-Z]{0,1}:)|(?<=:86:).*?(?=:[\d]{2}[A-Z]{0,1}:)/s', $fileContents, $matches);
+
+        $modifiedString = $this->cleanTime($fileContents);
+
+        preg_match_all('/(?<=:61:).*?(?=:[\d]{2}[A-Z]{0,1}:)|(?<=:86:).*?(?=:[\d]{2}[A-Z]{0,1}:)/s', $modifiedString, $matches);
         return $matches[0];
+    }
+
+    /**
+     * Convert the : for the time to - so that it does not interfere with other regex patterns
+     * 
+     * @param string $input The input text
+     * @return string The converted string
+     */
+    private function cleanTime(string $input){
+        $pattern = '/(?<=\s)([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])/';
+
+        // Callback function to replace colons with dashes in the matched time string
+        $output = preg_replace_callback($pattern, function($matches) {
+            return $matches[1] . '-' . $matches[2] . '-' . $matches[3];
+        }, $input);
+
+        return $output;
     }
 
     /**
@@ -99,7 +119,7 @@ class Converter implements IConverter
         if ($type === 'D') 
         {
             $trx->transactionAmount = floatval(-$transactionAmount);
-            $trx->recepientIban = $iban;
+            $trx->recipientIban = $iban;
             $trx->recipientName = $name;
         } else {
             $trx->transactionAmount = floatval($transactionAmount);

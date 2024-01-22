@@ -36,7 +36,7 @@ class Transaction
             'transactionAmount' => $this->transactionAmount,
             'payerIban' => $this->payerIban,
             'payerName' => $this->payerName,
-            'recipientIban' => $this->recipientIban,
+            'recipientIban' => $this->recepientIban,
             'recipientName' => $this->recipientName,
             'description' => $this->description,
             'type' => $this->type,
