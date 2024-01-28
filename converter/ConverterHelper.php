@@ -52,7 +52,7 @@ class ConverterHelper implements IConverterHelper
      */
     public function getIBAN(string $description) : ?string
     {
-        preg_match('/\?31([A-Z]{2}\d{2}[A-Z0-9]{18})/', $description, $ibanMatches);
+        preg_match('/\?31([A-Z]{2}\d{2}[A-Z0-9]{16,18})/', $description, $ibanMatches);
         if (sizeof($ibanMatches) === 2) {
             return $ibanMatches[1];
         }
