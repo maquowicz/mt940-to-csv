@@ -69,6 +69,7 @@ class ConverterHelper implements IConverterHelper
     {
         $pattern = '/\?32((?:(?!\?33).)*?)(\?34|$)/'; // updated pattern to include optional part between ?33 and ?
 
+        $description = str_replace('?33', '', $description);
         
         preg_match($pattern, $description, $matches);
 
