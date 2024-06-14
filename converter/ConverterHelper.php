@@ -12,25 +12,27 @@ class ConverterHelper implements IConverterHelper
 
     /**
      * Cleans the given description by removing any special characters and replacing the TAN number with "xxxxxx".
-     * 
+     *
      * @param string $description The description to be cleaned
      * @return string The cleaned description
-    */
-    public function cleanDescription($description) : string
+     */
+    public function cleanDescription($description): string
     {
-        $cleanedDescription = preg_replace('/TAN: (\d{6})/', 'TAN: xxxxxx', $description);
-        $cleanedDescription = preg_replace('/\R+/', '', $cleanedDescription);
-        return $cleanedDescription;
+        //$cleanedDescription = preg_replace('/TAN: (\d{6})/', 'TAN: xxxxxx', $description);
+        //$cleanedDescription = preg_replace('/\R+/', '', $cleanedDescription);
+        $result = str_replace("˙", "", $description);
+
+        return $result;
     }
 
-        
+
     /**
      * Gets the SEPA mandate reference out of the description
      *
-     * @param  string $description The description or text to extract the SEPA mandate reference
+     * @param string $description The description or text to extract the SEPA mandate reference
      * @return string The extracted SEPA reference or NULL
      */
-    public function getSEPAMandateReference(?string $description) : ?string 
+    public function getSEPAMandateReference(?string $description): ?string
     {
         if ($description === null || trim($description) === "") {
             return null;
@@ -43,54 +45,57 @@ class ConverterHelper implements IConverterHelper
         return $matches[1];
     }
 
-        
+
     /**
      * Get the IBAN out of the bank text
      *
-     * @param  string $description The description or text to extract the IBAN from
+     * @param string $string The description or text to extract the IBAN from
      * @return string The extracted IBAN or null
      */
-    public function getIBAN(string $description) : ?string
+    public function getIBAN(string $string): ?string
     {
-        preg_match('/\?31([A-Z]{2}\d{2}[A-Z0-9]{16,18})/', $description, $ibanMatches);
-        if (sizeof($ibanMatches) === 2) {
-            return $ibanMatches[1];
+        $tString = explode("\n", $string);
+        $result = "";
+        foreach ($tString as $line) {
+            if (str_starts_with($line, "~38")) {
+                $result = substr($line, 3, strlen($line));
+            }
         }
-        return null; 
+        return str_replace("\r", "", $result);
     }
-    
+
     /**
      * Get the name of the principal
      *
-     * @param  string $description The description or text to extract the name from
+     * @param string $description The description or text to extract the name from
      * @return string The name of the principal or null
      */
-    public function getName(string $description) : ?string
+    public function getName(string $description): ?string
     {
         $pattern = '/\?32((?:(?!\?33).)*?)(\?34|$)/'; // updated pattern to include optional part between ?33 and ?
 
         $description = str_replace('?33', '', $description);
-        
+
         preg_match($pattern, $description, $matches);
 
         if (isset($matches[1])) {
             $result = $matches[1]; // contains the extracted substring before ?33
-            
+
             $result = str_replace('?', '', $result); // remove any remaining question marks
-            
+
             if (isset($matches[3])) {
                 $optionalPart = $matches[3]; // contains the extracted substring between ?33 and ?
                 $optionalPart = str_replace('?', '', $optionalPart); // remove any remaining question marks
                 $result .= $optionalPart; // concatenate both parts
             }
-            
+
             return $result;
-        } 
+        }
 
         return null;
     }
 
-    public function getPostingText(string $description) : ?string
+    public function getPostingText(string $description): ?string
     {
         preg_match('/\?00([\w\d]{1,27})\?/', $description, $matches);
         if (sizeof($matches) === 2) {
@@ -99,7 +104,7 @@ class ConverterHelper implements IConverterHelper
         return null;
     }
 
-    public function getMemo(string $description) : ?string 
+    public function getMemo(string $description): ?string
     {
         //First filter everything between the ?20 and the ?30
         preg_match('/\?20(.*)\?30/', $description, $initialMatches);
@@ -132,8 +137,83 @@ class ConverterHelper implements IConverterHelper
             $workingString = preg_replace('/(\s{1})?\?2\d([a-zA-Z]{1})/', '$1$2', $workingString);
             $workingString = preg_replace('/([a-zA-Z]{1})\?2\d(\s{1})/', '$1$2', $workingString);
             $workingString = preg_replace('/([0-9]{1})?\?2\d(\s{1})/', '$1$2', $workingString);
-            return $workingString;   
+            return $workingString;
         }
-        return null; 
+        return null;
+    }
+
+    public function getOpCode(string $string): ?string
+    {
+        //:86:020~00{opCode}
+        $tString = explode("\n", $string);
+        $result = str_replace("020~00", "", $tString[0]);
+        return str_replace("\r", "", $result);
+    }
+
+    public function getTitle(string $string): ?string
+    {
+        $tString = explode("\n", $string);
+        $lines = [20, 21, 22, 23, 24, 25];
+        $result = "";
+        foreach ($tString as $line) {
+            if (str_starts_with($line, "~") && in_array((int)substr($line, 1, 2), $lines)) {
+                $cLine = str_replace("\r", "", $line);
+                if (!empty($cLine)){
+                    $result .= substr($cLine, 3, strlen($cLine));
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function getContact(string $string): ?string
+    {
+        $tString = explode("\n", $string);
+        $result = "";
+        foreach ($tString as $line) {
+            if (str_starts_with($line, "~32")) {
+                $result = substr($line, 3, strlen($line));
+            }
+        }
+        return str_replace("\r", "", $result);
+    }
+
+    public function getAddress(string $string): ?string
+    {
+        $tString = explode("\n", $string);
+        $result = "";
+        foreach ($tString as $line) {
+            if (str_starts_with($line, "~33")) {
+                $result = substr($line, 3, strlen($line));
+            }
+        }
+        return str_replace("\r", "", $result);
+    }
+
+    public function getSwrk(string $string): ?string
+    {
+        $tString = explode("\n", $string);
+        $result = "";
+        foreach ($tString as $line) {
+            if (str_starts_with($line, "~63")) {
+                $result = substr($line, 3, strlen($line));
+            }
+        }
+        return str_replace("\r", "", $result);
+    }
+
+    public function getElixirDate(string $string)
+    {
+        $tString = explode("\n", $string);
+        $result = "";
+        foreach ($tString as $line) {
+            if (str_starts_with($line, "~60")) {
+                $result = substr($line, 3, strlen($line));
+            }
+        }
+
+        $result = str_replace("\r", "", $result);
+        $date = DateTime::createFromFormat('Ymd', $result);
+        return $date;
     }
 }

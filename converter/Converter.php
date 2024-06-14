@@ -5,7 +5,10 @@
 class Converter implements IConverter
 {
     private array $rows = [];
+    private string $currency;
+    private string $balance;
 
+    /** @var IConverterHelper|ConverterHelper  */
     private IConverterHelper $converterHelper;
 
     public function __construct()
@@ -27,6 +30,14 @@ class Converter implements IConverter
         }
 
         $fileContents = file_get_contents($input);
+        $fileContents = mb_convert_encoding($fileContents, 'UTF-8',
+            mb_detect_encoding($fileContents, 'UTF-8, ISO-8859-2', true)
+        );
+        // :60F:C240613PLN7605,11
+        preg_match('/(?<=:60F:)(C|D)(\d{6})([A-Z]{3})(.*)/', $fileContents,$matches);
+        $this->currency = $matches[3];
+        $matches[4] = (float)rtrim(str_replace(",", ".", $matches[4]), "\r");
+        $this->balance = $matches[1] == "C" ? $matches[4] : -$matches[4];
         $transactions = $this->extractTransactions($fileContents);
         $this->rows = $this->convertToRows($transactions);
         return $this->rows;
@@ -40,10 +51,8 @@ class Converter implements IConverter
      */
     private function extractTransactions(string $fileContents): array
     {
-
-        $modifiedString = $this->cleanTime($fileContents);
-
-        preg_match_all('/(?<=:61:).*?(?=:[\d]{2}[A-Z]{0,1}:)|(?<=:86:).*?(?=:[\d]{2}[A-Z]{0,1}:)/s', $modifiedString, $matches);
+        //$modifiedString = $this->cleanTime($fileContents);
+        preg_match_all('/(?<=:61:).*?(?=:[\d]{2}[A-Z]{0,1}:)|(?<=:86:).*?(?=:[\d]{2}[A-Z]{0,1}:)/s', $fileContents, $matches);
         return $matches[0];
     }
 
@@ -97,35 +106,42 @@ class Converter implements IConverter
             return null;
         }
 
+        $currencyDateRaw = $matches[1];
+        $currencyDate = DateTime::createFromFormat('ymd', $currencyDateRaw);
+
+        $txDateRaw = $matches[2];
+        $txDate = DateTime::createFromFormat('md', $txDateRaw);
+
+        $txType = $matches[3];
+        $amount = str_replace(',', '.', $matches[5]);
+        $details = $this->converterHelper->cleanDescription($description);
+
+        $opCode = $this->converterHelper->getOpCode($details);
+        $title = $this->converterHelper->getTitle($details);
+        $iban = $this->converterHelper->getIBAN($details);
+        $contact = $this->converterHelper->getContact($details);
+        $address = $this->converterHelper->getAddress($details);
+        $swrk = $this->converterHelper->getSwrk($details);
+        $elixirDate = $this->converterHelper->getElixirDate($details);
+
+        $amount = $txType == "C" ? $amount : -$amount;
+        $this->balance += $amount;
+
+        // build result obj
         $trx = new Transaction();
-
-        $transactionDate = $matches[1];
-        $date = DateTime::createFromFormat('ymd', $transactionDate);
-
-        $cleanedDescription = $this->converterHelper->cleanDescription($description);
-
-        $iban = $this->converterHelper->getIBAN($cleanedDescription);
-        $name = $this->converterHelper->getName($cleanedDescription);
-
-        $memo = $this->converterHelper->getMemo($cleanedDescription);
-        $sepa = $this->converterHelper->getSEPAMandateReference($memo);
-
-        $trx->transactionDate = $date;
-        $trx->description = rtrim($memo);
-        $trx->sepaReference = $sepa;
-
-        $transactionAmount = str_replace(',', '.', $matches[5]);
-        $type = $matches[3];
-        if ($type === 'D') 
-        {
-            $trx->transactionAmount = floatval(-$transactionAmount);
-            $trx->recipientIban = $iban;
-            $trx->recipientName = $name;
-        } else {
-            $trx->transactionAmount = floatval($transactionAmount);
-            $trx->payerIban = $iban;
-            $trx->payerName = $name;
-        }
+        $trx->currencyDate = $currencyDate;
+        $trx->currency = $this->currency;
+        $trx->transactionDate = $txDate;
+        $trx->opCode = $opCode;
+        $trx->amount = $amount;
+        $trx->balanceAfter = $this->balance;
+        $trx->title = $title;
+        $trx->iban = $iban;
+        $trx->contact = $contact;
+        $trx->address = $address;
+        $trx->swrk = $swrk;
+        $trx->elixirDate = $elixirDate ?: null;
+        $trx->type = $txType;
 
         return $trx;
     }

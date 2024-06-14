@@ -2,19 +2,20 @@
 class Transaction
 {
     private DateTime $transactionDate;
-    private float $transactionAmount;
-    private ?string $payerIban = null;
-    private ?string $payerName = null;
-    private ?string $recipientIban = null;
-    private ?string $recipientName = null;
-    private ?string $description = null;
+    private ?string $iban = null;
     private ?string $type = null;
-    private ?string $sepaReference = null;
+    private ?string $currency = null;
+    private float $amount;
+    private float $balanceAfter;
+    private ?string $title = null;
+    private ?string $contact = null;
+    private ?string $address = null;
+    private DateTime $currencyDate;
+    private ?DateTime $elixirDate = null;
+    private ?string $swrk = null;
 
     // Constructor
-    public function __construct()
-    {
-    }
+    public function __construct() { }
 
     public function __set($name, $value)
     {
@@ -33,14 +34,17 @@ class Transaction
     {
         $data = [
             'transactionDate' => $this->transactionDate->format('Y-m-d'),
-            'transactionAmount' => $this->transactionAmount,
-            'payerIban' => $this->payerIban,
-            'payerName' => $this->payerName,
-            'recipientIban' => $this->recepientIban,
-            'recipientName' => $this->recipientName,
-            'description' => $this->description,
+            'iban' => $this->iban,
             'type' => $this->type,
-            'sepaReference' => $this->sepaReference,
+            'currency' => $this->currency,
+            'amount' => $this->amount,
+            'balanceAfter' => $this->balanceAfter,
+            'title' => $this->title,
+            'contact' => $this->contact,
+            'address' => $this->address,
+            'currencyDate' => $this->currencyDate->format('Y-m-d'),
+            'elixirDate' => $this->elixirDate->format('Y-m-d'),
+            'swrk' => $this->swrk
         ];
 
         return json_encode($data);
