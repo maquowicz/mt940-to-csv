@@ -33,7 +33,7 @@ class Converter implements IConverter
         $fileContents = mb_convert_encoding($fileContents, 'UTF-8',
             mb_detect_encoding($fileContents, 'UTF-8, ISO-8859-2', true)
         );
-        // :60F:C240613PLN7605,11
+
         preg_match('/(?<=:60F:)(C|D)(\d{6})([A-Z]{3})(.*)/', $fileContents,$matches);
         $this->currency = $matches[3];
         $matches[4] = (float)rtrim(str_replace(",", ".", $matches[4]), "\r");
@@ -129,9 +129,11 @@ class Converter implements IConverter
 
         // build result obj
         $trx = new Transaction();
+        $trx->transactionId = hash('crc32', $txDate->format('Y-m-d') . $iban . $amount);
         $trx->currencyDate = $currencyDate;
         $trx->currency = $this->currency;
         $trx->transactionDate = $txDate;
+        $trx->timestamp = $txDate->getTimestamp();
         $trx->opCode = $opCode;
         $trx->amount = $amount;
         $trx->balanceAfter = $this->balance;

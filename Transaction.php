@@ -1,6 +1,8 @@
 <?php
 class Transaction
 {
+    private ?string $transactionId = null;
+    private ?string $timestamp = null;
     private DateTime $transactionDate;
     private ?string $iban = null;
     private ?string $type = null;
@@ -33,6 +35,8 @@ class Transaction
     public function toJson()
     {
         $data = [
+            'transactionId' => $this->transactionId,
+            'timestamp' => $this->transactionDate->getTimestamp(),
             'transactionDate' => $this->transactionDate->format('Y-m-d'),
             'iban' => $this->iban,
             'type' => $this->type,
