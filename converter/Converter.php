@@ -100,8 +100,9 @@ class Converter implements IConverter
      */
     private function convertToRow(string $transaction, string $description): ?Transaction
     {
-        preg_match('/(\d{6})(\d{4})?([A-Z])([A-Z]{1,2})?(\d+,\d+)?/', $transaction, $matches);
-        if (sizeof($matches) !== 6) {
+        //preg_match('/(\d{6})(\d{4})?([A-Z])([A-Z]{1,2})?(\d+,\d+)?/', $transaction, $matches);
+        preg_match('/(\d{6})(\d{4})?([A-Z])([A-Z]{1,2})?(\d+,\d+)N(.{3})NONREF\/\/(\d{8})(\d{8})?/', $transaction, $matches);
+        if (sizeof($matches) !== 9) {
             echo "Error in parsing line " . $transaction;
             return null;
         }
@@ -116,11 +117,15 @@ class Converter implements IConverter
         $amount = str_replace(',', '.', $matches[5]);
         $details = $this->converterHelper->cleanDescription($description);
 
-        $opCode = $this->converterHelper->getOpCode($details);
+        $ozsiCode = $this->converterHelper->getOpCode($details);
+        if($ozsiCode != $matches[6]) {
+            echo "O-ZSI Type mismatch. " . $transaction;
+            return null;
+        }
         $title = $this->converterHelper->getTitle($details);
         $iban = $this->converterHelper->getIBAN($details);
-        $contact = $this->converterHelper->getContact($details);
-        $address = $this->converterHelper->getAddress($details);
+        $contact = $this->converterHelper->getContact($details, $ozsiCode);
+        $address = $this->converterHelper->getAddress($details, $ozsiCode);
         $swrk = $this->converterHelper->getSwrk($details);
         $elixirDate = $this->converterHelper->getElixirDate($details);
 
@@ -129,12 +134,13 @@ class Converter implements IConverter
 
         // build result obj
         $trx = new Transaction();
-        $trx->transactionId = hash('crc32', $txDate->format('Y-m-d') . $iban . $amount);
+        $trx->transactionId = hash('crc32', $txDate->format('Y-m-d') . $matches[7] . $matches[8] . $iban . $amount);
+        $trx->transactionNumber = $matches[7] . '/' . $matches[8];
         $trx->currencyDate = $currencyDate;
         $trx->currency = $this->currency;
         $trx->transactionDate = $txDate;
         $trx->timestamp = $txDate->getTimestamp();
-        $trx->opCode = $opCode;
+        $trx->ozsiCode = $ozsiCode;
         $trx->amount = $amount;
         $trx->balanceAfter = $this->balance;
         $trx->title = $title;

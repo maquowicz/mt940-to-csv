@@ -1,7 +1,6 @@
 .idea/
 vendor/
-mt940-files/
-csv-files/
+files/
 *.csv
 .scannerwork
 .phpunit.cache

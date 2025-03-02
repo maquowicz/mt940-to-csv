@@ -2,10 +2,12 @@
 class Transaction
 {
     private ?string $transactionId = null;
+    private ?string $transactionNumber = null;
     private ?string $timestamp = null;
     private DateTime $transactionDate;
     private ?string $iban = null;
     private ?string $type = null;
+    private ?string $ozsiCode = null;
     private ?string $currency = null;
     private float $amount;
     private float $balanceAfter;
@@ -36,10 +38,12 @@ class Transaction
     {
         $data = [
             'transactionId' => $this->transactionId,
+            'transactionNumber' => $this->transactionNumber,
             'timestamp' => $this->transactionDate->getTimestamp(),
             'transactionDate' => $this->transactionDate->format('Y-m-d'),
             'iban' => $this->iban,
             'type' => $this->type,
+            'ozsiCode' => $this->ozsiCode,
             'currency' => $this->currency,
             'amount' => $this->amount,
             'balanceAfter' => $this->balanceAfter,

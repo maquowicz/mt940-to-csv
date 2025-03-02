@@ -166,20 +166,36 @@ class ConverterHelper implements IConverterHelper
         return $result;
     }
 
-    public function getContact(string $string): ?string
+    public function getContact(string $string, $type = null): ?string
     {
+        switch($type) {
+            case 114: // card debit
+                $startsWith = ['~22', '~23'];
+                break;
+            default:
+                $startsWith = ['~32'];
+                break;
+        }
         $tString = explode("\n", $string);
         $result = "";
         foreach ($tString as $line) {
-            if (str_starts_with($line, "~32")) {
-                $result = substr($line, 3, strlen($line));
+            if (in_array(substr($line, 0, 3), $startsWith)) {
+                $result .= substr(trim($line), 3, strlen($line));
             }
         }
         return str_replace("\r", "", $result);
     }
 
-    public function getAddress(string $string): ?string
+    public function getAddress(string $string, $type = null): ?string
     {
+        switch($type) {
+            case 114: // card debit
+                $startsWith = ['~22', '~23'];
+                break;
+            default:
+                $startsWith = ['~32'];
+                break;
+        }
         $tString = explode("\n", $string);
         $result = "";
         foreach ($tString as $line) {
