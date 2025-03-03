@@ -110,8 +110,8 @@ class Converter implements IConverter
         $currencyDateRaw = $matches[1];
         $currencyDate = DateTime::createFromFormat('ymd', $currencyDateRaw);
 
-        $txDateRaw = $matches[2];
-        $txDate = DateTime::createFromFormat('md', $txDateRaw);
+        $txDateRaw = $currencyDate->format('y').$matches[2]; // this is missing year
+        $txDate = DateTime::createFromFormat('ymd', $txDateRaw);
 
         $txType = $matches[3];
         $amount = str_replace(',', '.', $matches[5]);
@@ -123,7 +123,7 @@ class Converter implements IConverter
             return null;
         }
         $title = $this->converterHelper->getTitle($details);
-        $iban = $this->converterHelper->getIBAN($details);
+        $iban = $this->converterHelper->getIBAN($details, $ozsiCode);
         $contact = $this->converterHelper->getContact($details, $ozsiCode);
         $address = $this->converterHelper->getAddress($details, $ozsiCode);
         $swrk = $this->converterHelper->getSwrk($details);

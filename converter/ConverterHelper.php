@@ -52,14 +52,52 @@ class ConverterHelper implements IConverterHelper
      * @param string $string The description or text to extract the IBAN from
      * @return string The extracted IBAN or null
      */
-    public function getIBAN(string $string): ?string
+    public function getIBAN(string $string, $type = null): ?string
     {
+        switch ($type) {
+            case 114: // card debit
+                $startsWith = ['~21'];
+                break;
+            case 'A88': // blik ?
+                $startsWith = ['~21'];
+                break;
+            case 'A13': // card nfc ?
+                $startsWith = ['~20'];
+                break;
+            default:
+                $startsWith = ['~38'];
+                break;
+        }
         $tString = explode("\n", $string);
         $result = "";
         foreach ($tString as $line) {
-            if (str_starts_with($line, "~38")) {
-                $result = substr($line, 3, strlen($line));
+            if (in_array(substr($line, 0, 3), $startsWith)) {
+                $result .= substr(trim($line,"\r"), 3, strlen($line));
             }
+        }
+
+        switch ($type) {
+            case 114: // card debit
+                preg_match('/.(\d{4})\s*(\d{16})/', $result, $matches);
+                if (sizeof($matches) !== 3) {
+                    echo "Error in parsing OZSI/114 iban info " . $result . PHP_EOL;
+                    return null;
+                } else $result = $matches[2] . "/" . $matches[1];
+                break;
+            case 'A88': // blik
+                preg_match('/.\s*(\d{11})/', $result, $matches);
+                if (sizeof($matches) !== 2) {
+                    echo "Error in parsing OZSI/A88 iban info " . $result . PHP_EOL;
+                    return null;
+                } else $result = $matches[1];
+                break;
+            case 'A13': // card nfc ?
+                preg_match('/(\d*\*{6}\d{4}).*/', $result, $matches);
+                if (sizeof($matches) !== 2) {
+                    echo "Error in parsing OZSI/A13 iban info " . $result . PHP_EOL;
+                    return null;
+                } else $result = $matches[1];
+                break;
         }
         return str_replace("\r", "", $result);
     }
@@ -172,6 +210,9 @@ class ConverterHelper implements IConverterHelper
             case 114: // card debit
                 $startsWith = ['~22', '~23'];
                 break;
+            case 'A88': // blik ?
+                $startsWith = ['~22', '~23'];
+                break;
             default:
                 $startsWith = ['~32'];
                 break;
@@ -183,6 +224,24 @@ class ConverterHelper implements IConverterHelper
                 $result .= substr(trim($line), 3, strlen($line));
             }
         }
+
+        switch ($type) {
+            case 114: // card debit
+                preg_match('/(.{13})(\S{2})\s{1}(.{25}).*/', $result, $matches);
+                if (sizeof($matches) !== 4) {
+                    echo "Error in parsing OZSI/114 contact info " . $result . PHP_EOL;;
+                    return null;
+                } else $result = trim($matches[3]);
+                break;
+            case 'A88': // blik
+                preg_match('/\s*(\S*)(\s*)J(\s*)\d*/', $result, $matches);
+                if (sizeof($matches) !== 4) {
+                    echo "Error in parsing OZSI/A88 contact info " . $result . PHP_EOL;
+                    return null;
+                } else $result = trim($matches[1]);
+                break;
+        }
+
         return str_replace("\r", "", $result);
     }
 
@@ -193,16 +252,27 @@ class ConverterHelper implements IConverterHelper
                 $startsWith = ['~22', '~23'];
                 break;
             default:
-                $startsWith = ['~32'];
+                $startsWith = ['~33'];
                 break;
         }
         $tString = explode("\n", $string);
         $result = "";
         foreach ($tString as $line) {
-            if (str_starts_with($line, "~33")) {
-                $result = substr($line, 3, strlen($line));
+            if (in_array(substr($line, 0, 3), $startsWith)) {
+                $result .= substr(trim($line), 3, strlen($line));
             }
         }
+
+        switch ($type) {
+            case 114: // card debit
+                preg_match('/(.{13})(\S{2}).*/', $result, $matches);
+                if (sizeof($matches) !== 3) {
+                    echo "Error in parsing OZSI/114 address info " . $result;
+                    return null;
+                } else $result = trim($matches[1]) . " " . trim($matches[2]);
+                break;
+        }
+
         return str_replace("\r", "", $result);
     }
 
